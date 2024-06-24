@@ -1,6 +1,6 @@
-# Core-16-Interactive-Core-Memory-Badge
+# Firmware Development
 
-You are in the hardware development repository. 
+Arduino IDE
 
-Firmware is at https://github.com/ageppert/Core64/releases
+5V FTDI-USB Cable
 
