@@ -1,0 +1,7 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Core_64_KiCad_Library")(type "KiCad")(uri "/Users/ageppert/Dropbox/Electronics/Core 64 Interactive Badge/Core-64-Interactive-Core-Memory-Badge/Electronic Design/Core_64_KiCad_Library")(options "")(descr ""))
+  (lib (name "RasPi Pico")(type "KiCad")(uri "/Users/ageppert/Dropbox/Electronics/Core 64 Interactive Badge/Core-64c-Compact-Interactive-Core-Memory-Badge/Electronics/Raspberry_Pico_SC0915/footprints.pretty")(options "")(descr ""))
+  (lib (name "Adafruit_3.2_TFT")(type "KiCad")(uri "/Users/ageppert/Dropbox/Electronics/Core 64 Interactive Badge/Core-64-Interactive-Core-Memory-Badge/Electronic Design/Core_64_KiCad_Library/Adafruit_3.2_TFT/Adafruit_3.2_TFT.pretty")(options "")(descr ""))
+  (lib (name "Switch_XKB_SK12D07VG4_SK12D07L4B")(type "KiCad")(uri "/Users/ageppert/Dropbox/Electronics/Core 64 Interactive Badge/Core-64-Interactive-Core-Memory-Badge/Electronic Design/Core_64_KiCad_Library/Switch_XKB_SK12D07VG4_SK12D07L4B")(options "")(descr ""))
+)

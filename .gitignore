@@ -1,0 +1,10 @@
+# KiCad files
+# export files for BOM
+*.csv
+*.tsv
+*.xml
+# backup files
+*.bak
+# local project settings
+*.kicad_prl
+fp-info-cache

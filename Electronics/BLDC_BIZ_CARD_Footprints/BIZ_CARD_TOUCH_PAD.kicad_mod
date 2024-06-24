@@ -1,0 +1,85 @@
+(footprint "BIZ_CARD_TOUCH_PAD"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(descr "SMD pad as test Point, diameter 4.0mm")
+	(tags "test point SMD pad")
+	(property "Reference" "REF**"
+		(at 0 -2.898 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "46a0f7eb-95b9-4187-9858-474d020a565a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "BIZ_CARD_TOUCH_PAD"
+		(at 0 3.1 0)
+		(layer "F.Fab")
+		(uuid "78b94210-149f-429f-a40b-fb94267bb4c2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" "BIZ_CARD_TOUCH_PAD"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f2c85cdd-7386-4371-82df-9aee6b83ca37")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "425f6c75-f405-4600-8a8e-154dbd679fdf")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9c3301b0-ca84-44ef-86f4-6c8fe18fbfff")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr exclude_from_pos_files exclude_from_bom)
+	(fp_text user "${REFERENCE}"
+		(at 0 -2.9 0)
+		(layer "F.Fab")
+		(uuid "9cc6e2c5-a2c9-4ed7-b444-5cea90132f05")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd circle
+		(at 0 0)
+		(size 8 8)
+		(layers "F.Cu")
+		(uuid "0572d10f-fccc-4a2c-8c9b-3e84c3068dc0")
+	)
+)

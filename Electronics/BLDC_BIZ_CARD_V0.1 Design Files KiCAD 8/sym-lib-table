@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "CORE_64_LIBRARY")(type "KiCad")(uri "/Users/ageppert/Dropbox/Electronics/Core 64 Interactive Badge/Core-64-Interactive-Core-Memory-Badge/Electronic Design/Core_64_KiCad_Library/Core_64_symbols/Core_64_KiCad_Library.kicad_sym")(options "")(descr ""))
+  (lib (name "SK12D07VG4")(type "KiCad")(uri "/Users/ageppert/Dropbox/Electronics/Core 64 Interactive Badge/Core-64-Interactive-Core-Memory-Badge/Electronic Design/Core_64_KiCad_Library/Switch_XKB_SK12D07VG4_SK12D07L4B/SK12D07VG4.kicad_sym")(options "")(descr ""))
+)
