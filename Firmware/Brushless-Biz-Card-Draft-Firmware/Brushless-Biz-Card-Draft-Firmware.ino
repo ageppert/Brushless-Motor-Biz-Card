@@ -23,6 +23,10 @@
   #include <Adafruit_NeoPixel.h>
   #define NUM_LEDS       1
   Adafruit_NeoPixel pixels(NUM_LEDS, PIN_LED_GRB, NEO_GRB + NEO_KHZ800);
+  int ledBlinkState = 0;
+  unsigned long previousMillis = 0;
+  unsigned long currentMillis = 0;
+  const long interval = 500;
 
 // SAO OLED I2C 0x3C
   #include <Wire.h>
@@ -63,6 +67,7 @@ void setup() {
     pixels.begin();
     pixels.clear();
     pixels.show();
+    ledGreen();
 
   // OLED SETUP
     // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -84,6 +89,7 @@ void setup() {
       display.println(F(" www.MachineIdeas.com")); 
       display.display();      
     }
+    ledBlue();
 } // END OF SETUP FUNCTION
  
 void loop() {
@@ -109,16 +115,23 @@ void loop() {
       pinMode(pinGateBH, OUTPUT);
       pinMode(pinGateCH, OUTPUT);
 
-  twinkle();
+
 
   // MAIN APPLICATION MODE
     // Housekeeping tasks
+      // Blink to look alive
+        currentMillis = millis();
+        if (currentMillis - previousMillis >= interval) {
+          previousMillis = currentMillis;
+          if (ledBlinkState == 0) { ledBlinkState = 1; ledRed();}
+          else {ledBlinkState = 0; ledOff(); }
+        }
       // check the buttons
       // read the potentiometer (if active)
       // read the PWM input (if active)
       // serial port management
     // State Manager
-      move();
+    move();
 }
 
 void twinkle()
@@ -134,6 +147,29 @@ void twinkle()
   delay(1);
 }
 
+void ledOff()
+{
+  pixels.setPixelColor(0, pixels.Color(0, 0, 0));
+  pixels.show();
+}
+
+void ledRed()
+{
+  pixels.setPixelColor(0, pixels.Color(3, 0, 0));
+  pixels.show();
+}
+
+void ledGreen()
+{
+  pixels.setPixelColor(0, pixels.Color(0, 3, 0));
+  pixels.show();
+}
+
+void ledBlue()
+{
+  pixels.setPixelColor(0, pixels.Color(0, 0, 3));
+  pixels.show();
+}
 
 void move()
 {
