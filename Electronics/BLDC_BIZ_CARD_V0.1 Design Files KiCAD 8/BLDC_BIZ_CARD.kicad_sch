@@ -10960,7 +10960,7 @@
 		)
 		(uuid "66cdf746-4857-43bb-be27-62a45f29ede0")
 	)
-	(text "SAO OLED or\nGeneric 0.96” (128x64) or 1.5” (128x128)\nI2C 4-pins, often ADDRESS: 0x3C (60 decimal)\nAlternate is 0x3D, not 0x7A or 0x78 (wrong 8-bit)!"
+	(text "SAO OLED (with SSD1306 driver) or\nGeneric 0.96” (128x64) or 1.5” (128x128)\nI2C 4-pins, often ADDRESS: 0x3C (60 decimal)\nAlternate is 0x3D, not 0x7A or 0x78 (wrong 8-bit)!"
 		(exclude_from_sim no)
 		(at 81.915 248.285 0)
 		(effects

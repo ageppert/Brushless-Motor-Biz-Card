@@ -68,6 +68,31 @@ void setup() {
     pixels.clear();
     pixels.show();
     ledGreen();
+    delay(500);
+
+  // Detect board type through built-in MCU EEPROM
+  
+  // Configure hardware per EEPROM
+    // Default state of pins should be floating, and external (on-board) hardware should provide safe starting states
+    // Inputs
+      pinMode(potPin, INPUT);
+
+    // Capacitive touch buttons
+
+    // Outputs: Six PWMs for the three MOSFET half-bridges
+      TCCR0B = TCCR0B & 0b11111000 | 0x03; // changing this will also affect millis() and delay(), better to leave it default (0x03).
+      TCCR1B = TCCR1B & 0b11111000 | 0x01; // set PWM frequency @ 31250 Hz for Pins 9 and 10, (0x03 is default value, gives 490 Hz).
+      TCCR2B = TCCR2B & 0b11111000 | 0x01; // set PWM frequency @ 31250 Hz for Pins 11 and 3, (0x03 is default value, gives 490 Hz).
+      // ensure pin 2 and 5 are configured as well.
+      
+      ICR1 = 255 ; // 8 bit resolution for PWM
+ 
+      pinMode(pinGateAL, OUTPUT);
+      pinMode(pinGateBL, OUTPUT);
+      pinMode(pinGateCL, OUTPUT);
+      pinMode(pinGateAH, OUTPUT);
+      pinMode(pinGateBH, OUTPUT);
+      pinMode(pinGateCH, OUTPUT);
 
   // OLED SETUP
     // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -90,35 +115,12 @@ void setup() {
       display.display();      
     }
     ledBlue();
+    delay(500);
 } // END OF SETUP FUNCTION
  
 void loop() {
-  // Detect board type through built-in MCU EEPROM
-
-  // Configure hardware per EEPROM
-    // Default state of pins should be floating, and external (on-board) hardware should provide safe starting states
-    // Inputs
-      pinMode(potPin, INPUT);
-
-    // Outputs: Six PWMs for the three MOSFET half-bridges
-      TCCR0B = TCCR0B & 0b11111000 | 0x03; // changing this will also affect millis() and delay(), better to leave it default (0x03).
-      TCCR1B = TCCR1B & 0b11111000 | 0x01; // set PWM frequency @ 31250 Hz for Pins 9 and 10, (0x03 is default value, gives 490 Hz).
-      TCCR2B = TCCR2B & 0b11111000 | 0x01; // set PWM frequency @ 31250 Hz for Pins 11 and 3, (0x03 is default value, gives 490 Hz).
-      // ensure pin 2 and 5 are configured as well.
-      
-      ICR1 = 255 ; // 8 bit resolution for PWM
- 
-      pinMode(pinGateAL, OUTPUT);
-      pinMode(pinGateBL, OUTPUT);
-      pinMode(pinGateCL, OUTPUT);
-      pinMode(pinGateAH, OUTPUT);
-      pinMode(pinGateBH, OUTPUT);
-      pinMode(pinGateCH, OUTPUT);
-
-
-
   // MAIN APPLICATION MODE
-    // Housekeeping tasks
+    // HOUSEKEEPING
       // Blink to look alive
         currentMillis = millis();
         if (currentMillis - previousMillis >= interval) {
@@ -130,9 +132,10 @@ void loop() {
       // read the potentiometer (if active)
       // read the PWM input (if active)
       // serial port management
-    // State Manager
+    
+    // STATE MANAGER
     move();
-}
+} // END OF MAIN LOOP FUNCTION
 
 void twinkle()
 {
@@ -200,7 +203,7 @@ void move()
 // Select ONLY ONE of the following lines for constant speed, speed control or position control:
 
   //This will give you constant speed, remember if you changed TCCR0B to 0x01, then delay(64000) = ~1 second
-  //delay(5); 
+  delay(5); 
 
   //This will give you open loop speed control with the potentiometer
   //delay(sensorValue/10);
@@ -208,10 +211,7 @@ void move()
   //This will give you open loop position control with the potentiometer
   currentStepA = sensorValue/5; //divide by a number to affect the ratio of pot position : motor position
 
- ////////////
-
-   
-//Serial.println(currentStepA);
+  //Serial.println(currentStepA);
   //pos=pulseIn(encoder,HIGH);
   //Serial.println(pos);
 }
