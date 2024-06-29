@@ -1,54 +1,90 @@
-//Program to run a brushless motor in open loop mode
-//By Juan Pablo Angulo
-//Ask me questions: https://www.patreon.com/randomaccessprojects
-//A simple DIY circuit to run it can be found in my Patreon: https://www.patreon.com/randomaccessprojects
-//Thanks for your support!
-// ST L6234 Brushless Driver (like SimpleFOC shield). Three outputs to control high and low side FETs. When high, high side FET is enabled. When low, low side FET is enabled.
+/*    
+    Brushless Motor and Driver Business Card
+    Andy Geppert, Machine Ideas, June 2024
+    V0.1 board, S/N 1
+    https://hackaday.io/project/196576-brushless-motor-and-driver-business-card-kit
+    https://github.com/ageppert/Brushless-Motor-Biz-Card
+      
+    Using 328PB from Arduino Uno clone, 16 MHz resonator
+    Additional Boards Manager URL: https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+    https://github.com/MCUdude/MiniCore?tab=readme-ov-file
+    Arduino IDE 1.8.19 / Board / MiniCore / AtMega 328
+    Variant PB
 
-// Hacked a bunch by Andy Geppert for Brushless Motor and Driver Business Card
-// V0.1 board
-// Using 328PB from Arduino Uno clone, 16 MHz
-// Additional Boards Manager URL: https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
-// https://github.com/MCUdude/MiniCore?tab=readme-ov-file
-// Board/MiniCore/AtMega 328
+    Code started life as:
+      Program to run a brushless motor in open loop mode, three approximated sine wave PWM sequences, 120 degrees out of phase
+      By Juan Pablo Angulo https://www.patreon.com/randomaccessprojects
+      ST L6234 Brushless Driver (like SimpleFOC shield). Three PWM outputs to control high and low side FETs. When high, high side FET is enabled. When low, low side FET is enabled.
+    Hacked a bunch by Andy Geppert for Brushless Motor and Driver Business Card
+*/
 
+// USER RGB LED
+  #define PIN_LED_GRB   13
+  #include <Adafruit_NeoPixel.h>
+  #define NUM_LEDS       1
+  Adafruit_NeoPixel pixels(NUM_LEDS, PIN_LED_GRB, NEO_GRB + NEO_KHZ800);
 
-#include <Adafruit_NeoPixel.h>
-#define PIN_LED_GRB   13
-#define NUM_LEDS       1
-Adafruit_NeoPixel pixels(NUM_LEDS, PIN_LED_GRB, NEO_GRB + NEO_KHZ800);
+// SAO OLED I2C 0x3C
+  #include <Wire.h>
+  #include <Adafruit_GFX.h>
+  #include <Adafruit_SSD1306.h>
+  #define SCREEN_WIDTH 128 // OLED display width, in pixels
+  #define SCREEN_HEIGHT 64 // OLED display height, in pixels
+  // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+  // On an arduino UNO:       A4(SDA), A5(SCL)
+  #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+  #define SCREEN_ADDRESS 0x3C
+  Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+// Analog input option, not used
 const int potPin = A1;  // INPUT pot control for speed or position
-//use ports 9, 10, 11 
 
+// PWM
+  uint8_t pinGateAL =  9;
+  uint8_t pinGateBL = 10;
+  uint8_t pinGateCL = 11;
+  uint8_t pinGateAH =  5;
+  uint8_t pinGateBH =  3;
+  uint8_t pinGateCH =  2;
 
-// Arduino Pin Assignments
-uint8_t pinGateAL =  9;
-uint8_t pinGateBL = 10;
-uint8_t pinGateCL = 11;
-uint8_t pinGateAH =  5;
-uint8_t pinGateBH =  3;
-uint8_t pinGateCH =  2;
+// MOTOR CONTROL Variables
+  int pwmSin[] = {127,110,94,78,64,50,37,26,17,10,4,1,0,1,4,10,17,26,37,50,64,78,94,110,127,144,160,176,191,204,217,228,237,244,250,253,255,253,250,244,237,228,217,204,191,176,160,144,127}; // array of PWM duty values for 8-bit timer - sine function
+  int currentStepA=0; //initial pointer at 0   degrees for coil A
+  int currentStepB=16;//initial pointer at 120 degrees for coil B
+  int currentStepC=32;//initial pointer at 240 degrees for coil C
+  int pos;
 
-
-// Variables
-int pwmSin[] = {127,110,94,78,64,50,37,26,17,10,4,1,0,1,4,10,17,26,37,50,64,78,94,110,127,144,160,176,191,204,217,228,237,244,250,253,255,253,250,244,237,228,217,204,191,176,160,144,127}; // array of PWM duty values for 8-bit timer - sine function
-int currentStepA=0; //initial pointer at 0   degrees for coil A
-int currentStepB=16;//initial pointer at 120 degrees for coil B
-int currentStepC=32;//initial pointer at 240 degrees for coil C
-int pos;
-
-
-//SETUP
 void setup() {
   // Serial Port
     Serial.begin(115200);
   // EEPROM built in to AT328PB
-  // LEDs
-  pixels.begin();
-  pixels.clear();
 
-}
+  // LEDs
+    pixels.begin();
+    pixels.clear();
+    pixels.show();
+
+  // OLED SETUP
+    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+      Serial.println(F("SSD1306 allocation failed"));
+    }
+    else {
+      display.setTextColor(WHITE);
+      display.setTextSize(2);
+      display.clearDisplay();
+      display.setCursor(0, 0);
+      display.println(F(" Brushless"));
+      display.println(F("   Motor"));
+      display.setCursor(7, 32);
+      display.println(F(" Biz Card"));
+      display.setTextSize(1);
+      display.setCursor(22, 48);
+      display.println(F("By Andy Geppert")); 
+      display.println(F(" www.MachineIdeas.com")); 
+      display.display();      
+    }
+} // END OF SETUP FUNCTION
  
 void loop() {
   // Detect board type through built-in MCU EEPROM
