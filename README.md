@@ -12,11 +12,16 @@ HWV0.1 - Prototypes
 
 # REFERENCES
 
-Random Access Projects
+Carl Bugeja - PCB Motors and related magical creations
+
+https://www.youtube.com/@CarlBugeja
+
+
+Random Access Projects - Open loop brushless motor and beyond
 
 https://www.youtube.com/channel/UCRd9x4pmbc09_RXTrkSY2Gg
 
 
-Electronoobs
+Electronoobs - brushless motor and ESC projects
 
 https://www.youtube.com/@ELECTRONOOBS
