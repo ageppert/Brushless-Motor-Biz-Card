@@ -5,6 +5,19 @@
 //Thanks for your support!
 // ST L6234 Brushless Driver (like SimpleFOC shield). Three outputs to control high and low side FETs. When high, high side FET is enabled. When low, low side FET is enabled.
 
+// Hacked a bunch by Andy Geppert for Brushless Motor and Driver Business Card
+// V0.1 board
+// Using 328PB from Arduino Uno clone, 16 MHz
+// Additional Boards Manager URL: https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+// https://github.com/MCUdude/MiniCore?tab=readme-ov-file
+// Board/MiniCore/AtMega 328
+
+
+#include <Adafruit_NeoPixel.h>
+#define PIN_LED_GRB   13
+#define NUM_LEDS       1
+Adafruit_NeoPixel pixels(NUM_LEDS, PIN_LED_GRB, NEO_GRB + NEO_KHZ800);
+
 const int potPin = A1;  // INPUT pot control for speed or position
 //use ports 9, 10, 11 
 
@@ -25,11 +38,15 @@ int currentStepB=16;//initial pointer at 120 degrees for coil B
 int currentStepC=32;//initial pointer at 240 degrees for coil C
 int pos;
 
+
 //SETUP
 void setup() {
   // Serial Port
     Serial.begin(115200);
   // EEPROM built in to AT328PB
+  // LEDs
+  pixels.begin();
+  pixels.clear();
 
 }
  
@@ -56,15 +73,32 @@ void loop() {
       pinMode(pinGateBH, OUTPUT);
       pinMode(pinGateCH, OUTPUT);
 
+  twinkle();
+
   // MAIN APPLICATION MODE
     // Housekeeping tasks
       // check the buttons
-      // read the potentiometer
+      // read the potentiometer (if active)
+      // read the PWM input (if active)
       // serial port management
     // State Manager
       move();
 }
-  
+
+void twinkle()
+{
+  pixels.setPixelColor(0, pixels.Color(3, 0, 0));
+  pixels.show();
+  delay(1);
+  pixels.setPixelColor(0, pixels.Color(0, 3, 0));
+  pixels.show();
+  delay(1);
+  pixels.setPixelColor(0, pixels.Color(0, 0, 3));
+  pixels.show();
+  delay(1);
+}
+
+
 void move()
 {
   currentStepA = currentStepA + 1;  //Add 1 to make the motor move step by step.
@@ -80,13 +114,13 @@ void move()
   analogWrite(pinGateCL, pwmSin[currentStepB]*1);
 
   //Following send data to PLX-DAQ macro for Excel
-  /*Serial.print("DATA,");
+  Serial.print("DATA,");
   Serial.print(pwmSin[currentStepA]);
   Serial.print(","); 
   Serial.print(pwmSin[currentStepB]);
   Serial.print(","); 
   Serial.println(pwmSin[currentStepC]);
-  */
+  
 
   //Read pot value
   int sensorValue = analogRead(potPin); 
