@@ -43,13 +43,16 @@
 // Analog input option, not used
 const int potPin = A1;  // INPUT pot control for speed or position
 
-// PWM
-  uint8_t pinGateAL =  9;
-  uint8_t pinGateBL = 10;
-  uint8_t pinGateCL = 11;
-  uint8_t pinGateAH =  5;
+// Digital Write FAST!!!
+  #include <digitalWriteFast.h>
+  uint8_t pinGateAH =  5; // Set high to disable upper PFET, low to enable. Using only LOW/HIGH digital control. No need to PWM these.
   uint8_t pinGateBH =  3;
   uint8_t pinGateCH =  2;
+
+// PWM
+  uint8_t pinGateAL =  9; // Set low to disable lower NFET, high to enable. These are modulated with PWM.
+  uint8_t pinGateBL = 10;
+  uint8_t pinGateCL = 11;
 
 // MOTOR CONTROL Variables
   int pwmSin[] = {127,110,94,78,64,50,37,26,17,10,4,1,0,1,4,10,17,26,37,50,64,78,94,110,127,144,160,176,191,204,217,228,237,244,250,253,255,253,250,244,237,228,217,204,191,176,160,144,127}; // array of PWM duty values for 8-bit timer - sine function
@@ -79,20 +82,23 @@ void setup() {
 
     // Capacitive touch buttons
 
-    // Outputs: Six PWMs for the three MOSFET half-bridges
+    // PWM Frequency
       TCCR0B = TCCR0B & 0b11111000 | 0x03; // changing this will also affect millis() and delay(), better to leave it default (0x03).
       TCCR1B = TCCR1B & 0b11111000 | 0x01; // set PWM frequency @ 31250 Hz for Pins 9 and 10, (0x03 is default value, gives 490 Hz).
       TCCR2B = TCCR2B & 0b11111000 | 0x01; // set PWM frequency @ 31250 Hz for Pins 11 and 3, (0x03 is default value, gives 490 Hz).
-      // ensure pin 2 and 5 are configured as well.
-      
       ICR1 = 255 ; // 8 bit resolution for PWM
- 
+
+    // OUTPUT PINS
       pinMode(pinGateAL, OUTPUT);
       pinMode(pinGateBL, OUTPUT);
       pinMode(pinGateCL, OUTPUT);
-      pinMode(pinGateAH, OUTPUT);
-      pinMode(pinGateBH, OUTPUT);
-      pinMode(pinGateCH, OUTPUT);
+      // pinMode(pinGateAH, OUTPUT);
+      // pinMode(pinGateBH, OUTPUT);
+      // pinMode(pinGateCH, OUTPUT);
+      pinModeFast(pinGateAH, OUTPUT);
+      pinModeFast(pinGateBH, OUTPUT);
+      pinModeFast(pinGateCH, OUTPUT);
+      pwmAllDisable();
 
   // OLED SETUP
     // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -134,44 +140,72 @@ void loop() {
       // serial port management
     
     // STATE MANAGER
-    move();
+    // pwmAllDisable();
+    // move();
+    
+    for( uint8_t i = 0; i < 255; i++) {
+      pwmAtoBEnable(i);
+      delay(1);
+    }
+    for( uint8_t i = 255; i > 0; i--) {
+      pwmAtoBEnable(i);
+      delay(1);
+    }
+    pwmAtoBEnable(0);
+
+    for( uint8_t i = 0; i < 255; i++) {
+      pwmBtoAEnable(i);
+      delay(1);
+    }
+    for( uint8_t i = 255; i > 0; i--) {
+      pwmBtoAEnable(i);
+      delay(1);
+    }
+    pwmBtoAEnable(0);
+    
+    delay (10);
+    
 } // END OF MAIN LOOP FUNCTION
 
-void twinkle()
+void pwmAtoBEnable(uint8_t value)
 {
-  pixels.setPixelColor(0, pixels.Color(3, 0, 0));
-  pixels.show();
-  delay(1);
-  pixels.setPixelColor(0, pixels.Color(0, 3, 0));
-  pixels.show();
-  delay(1);
-  pixels.setPixelColor(0, pixels.Color(0, 0, 3));
-  pixels.show();
-  delay(1);
+  if (value>0) {
+    // analogWrite(pinGateAH,0);       // A high side enable solid
+    digitalWriteFast(pinGateAH, LOW);
+    analogWrite(pinGateBL,value);   // B low side enable PWM
+  }
+  else {
+    // analogWrite(pinGateAH,255);     // A high side disable solid
+    digitalWriteFast(pinGateAH, HIGH);
+    analogWrite(pinGateBL,0);       // B low side disable PWM
+  }
 }
 
-void ledOff()
+void pwmBtoAEnable(uint8_t value)
 {
-  pixels.setPixelColor(0, pixels.Color(0, 0, 0));
-  pixels.show();
+  if (value>0) {
+    // analogWrite(pinGateBH,0);       // A high side enable solid
+    digitalWriteFast(pinGateBH, LOW);
+    analogWrite(pinGateAL,value);   // B low side enable PWM
+  }
+  else {
+    // nalogWrite(pinGateBH,255);     // A high side disable solid
+    digitalWriteFast(pinGateBH, HIGH);
+    analogWrite(pinGateAL,0);       // B low side disable PWM
+  }
 }
 
-void ledRed()
+void pwmAllDisable()
 {
-  pixels.setPixelColor(0, pixels.Color(3, 0, 0));
-  pixels.show();
-}
-
-void ledGreen()
-{
-  pixels.setPixelColor(0, pixels.Color(0, 3, 0));
-  pixels.show();
-}
-
-void ledBlue()
-{
-  pixels.setPixelColor(0, pixels.Color(0, 0, 3));
-  pixels.show();
+  // analogWrite(pinGateAH,255);
+  // analogWrite(pinGateBH,255);
+  // analogWrite(pinGateCH,255);
+  digitalWriteFast(pinGateAH, HIGH);
+  digitalWriteFast(pinGateBH, HIGH);
+  digitalWriteFast(pinGateCH, HIGH);
+  analogWrite(pinGateAL,0);
+  analogWrite(pinGateBL,0);
+  analogWrite(pinGateCL,0);  
 }
 
 void move()
@@ -214,4 +248,41 @@ void move()
   //Serial.println(currentStepA);
   //pos=pulseIn(encoder,HIGH);
   //Serial.println(pos);
+}
+
+void twinkle()
+{
+  pixels.setPixelColor(0, pixels.Color(3, 0, 0));
+  pixels.show();
+  delay(1);
+  pixels.setPixelColor(0, pixels.Color(0, 3, 0));
+  pixels.show();
+  delay(1);
+  pixels.setPixelColor(0, pixels.Color(0, 0, 3));
+  pixels.show();
+  delay(1);
+}
+
+void ledOff()
+{
+  pixels.setPixelColor(0, pixels.Color(0, 0, 0));
+  pixels.show();
+}
+
+void ledRed()
+{
+  pixels.setPixelColor(0, pixels.Color(3, 0, 0));
+  pixels.show();
+}
+
+void ledGreen()
+{
+  pixels.setPixelColor(0, pixels.Color(0, 3, 0));
+  pixels.show();
+}
+
+void ledBlue()
+{
+  pixels.setPixelColor(0, pixels.Color(0, 0, 3));
+  pixels.show();
 }
