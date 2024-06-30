@@ -55,7 +55,10 @@ const int potPin = A1;  // INPUT pot control for speed or position
   uint8_t pinGateCL = 11;
 
 // MOTOR CONTROL Variables
-  int pwmSin[] = {127,110,94,78,64,50,37,26,17,10,4,1,0,1,4,10,17,26,37,50,64,78,94,110,127,144,160,176,191,204,217,228,237,244,250,253,255,253,250,244,237,228,217,204,191,176,160,144,127}; // array of PWM duty values for 8-bit timer - sine function
+  uint8_t stepDelay = 3; // Number of milliseconds between steps through the electrical cycle sine array
+  #define PWM_SINE_ARRAY_LENGTH 49    // from 0 to 48
+  int pwmSin[PWM_SINE_ARRAY_LENGTH] = {127,110,94,78,64,50,37,26,        17,10,4,1,0,1,4,10,              17,26,37,50,64,78,94,110,  127,144,160,176,191,204,217,228,   
+                  237,244,250,253,255,253,250,244,  237,228,217,204,191,176,160,144  ,127}; // array of PWM duty values for 8-bit timer - sine function
   int currentStepA=0; //initial pointer at 0   degrees for coil A
   int currentStepB=16;//initial pointer at 120 degrees for coil B
   int currentStepC=32;//initial pointer at 240 degrees for coil C
@@ -142,30 +145,44 @@ void loop() {
     // STATE MANAGER
     // pwmAllDisable();
     // move();
-    
-    for( uint8_t i = 0; i < 255; i++) {
-      pwmAtoBEnable(i);
-      delay(1);
-    }
-    for( uint8_t i = 255; i > 0; i--) {
-      pwmAtoBEnable(i);
-      delay(1);
-    }
-    pwmAtoBEnable(0);
+    // phaseABrampUpDownTriangle();
+    phaseABrampUpDownSine(stepDelay);
 
-    for( uint8_t i = 0; i < 255; i++) {
-      pwmBtoAEnable(i);
-      delay(1);
-    }
-    for( uint8_t i = 255; i > 0; i--) {
-      pwmBtoAEnable(i);
-      delay(1);
-    }
-    pwmBtoAEnable(0);
-    
-    delay (10);
+    // delay (10);
     
 } // END OF MAIN LOOP FUNCTION
+
+void phaseABrampUpDownSine(uint8_t value)
+{
+  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
+    pwmAtoBEnable(pwmSin[i]);
+    delay(value);
+  }
+  pwmAtoBEnable(0);
+}
+
+void phaseABrampUpDownTriangle()
+{
+  for( uint8_t i = 0; i < 255; i++) {
+    pwmAtoBEnable(i);
+    delay(1);
+  }
+  for( uint8_t i = 255; i > 0; i--) {
+    pwmAtoBEnable(i);
+    delay(1);
+  }
+  pwmAtoBEnable(0);
+
+  for( uint8_t i = 0; i < 255; i++) {
+    pwmBtoAEnable(i);
+    delay(1);
+  }
+  for( uint8_t i = 255; i > 0; i--) {
+    pwmBtoAEnable(i);
+    delay(1);
+  }
+  pwmBtoAEnable(0);
+}
 
 void pwmAtoBEnable(uint8_t value)
 {
