@@ -55,7 +55,8 @@ const int potPin = A1;  // INPUT pot control for speed or position
   uint8_t pinGateCL = 11;
 
 // MOTOR CONTROL Variables
-  uint8_t stepDelay = 3; // Number of milliseconds between steps through the electrical cycle sine array
+  #define POWER_SCALAR 0.5          // Between 0 and 1 to reduce the peak PWM value, aka voltage.
+  uint8_t stepDelay = 5; // Number of milliseconds between steps through the electrical cycle sine array
   #define PWM_SINE_ARRAY_LENGTH 49    // from 0 to 48
   int pwmSin[PWM_SINE_ARRAY_LENGTH] = {127,110,94,78,64,50,37,26,        17,10,4,1,0,1,4,10,              17,26,37,50,64,78,94,110,  127,144,160,176,191,204,217,228,   
                   237,244,250,253,255,253,250,244,  237,228,217,204,191,176,160,144  ,127}; // array of PWM duty values for 8-bit timer - sine function
@@ -87,8 +88,8 @@ void setup() {
 
     // PWM Frequency
       TCCR0B = TCCR0B & 0b11111000 | 0x03; // changing this will also affect millis() and delay(), better to leave it default (0x03).
-      TCCR1B = TCCR1B & 0b11111000 | 0x01; // set PWM frequency @ 31250 Hz for Pins 9 and 10, (0x03 is default value, gives 490 Hz).
-      TCCR2B = TCCR2B & 0b11111000 | 0x01; // set PWM frequency @ 31250 Hz for Pins 11 and 3, (0x03 is default value, gives 490 Hz).
+      TCCR1B = TCCR1B & 0b11111000 | 0x03; // set PWM frequency @ 31250 Hz for Pins 9 and 10, (0x03 is default value, gives 490 Hz).
+      TCCR2B = TCCR2B & 0b11111000 | 0x03; // set PWM frequency @ 31250 Hz for Pins 11 and 3, (0x03 is default value, gives 490 Hz).
       ICR1 = 255 ; // 8 bit resolution for PWM
 
     // OUTPUT PINS
@@ -146,11 +147,58 @@ void loop() {
     // pwmAllDisable();
     // move();
     // phaseABrampUpDownTriangle();
-    phaseABrampUpDownSine(stepDelay);
+    // phaseABrampUpDownSine(stepDelay);
+    PhaseAHighSideSine(stepDelay);
+    // spinTheMotorBlindlySineWave(stepDelay);
 
-    // delay (10);
+    delay (10);
     
 } // END OF MAIN LOOP FUNCTION
+
+void spinTheMotorBlindlyTrapezoidal(uint8_t value)
+{
+  // Step One
+  
+}
+
+void spinTheMotorBlindlySineWave(uint8_t value)
+{
+  /* H-Bridges and 6 step sequence
+      AH Q1    BH Q3   CH  Q5  (high side transistors are only on or off, no PWM needed)
+          U        V        W
+      AL Q2    BL Q4   CL  Q6  (low side transistors are PWM modulated)
+
+  Step  Q1  Q2  Q3  Q4  Q5  Q6
+        +   -   +   -   +   -
+  1     on          pwm
+  2     on                  pwm
+  3             on          pwm
+  4         pwm on
+  5         pwm         on
+  6                 pwm on
+  */
+  currentStepA = currentStepA + 1;  // Add 1 to make the motor move step by step.
+  currentStepB = currentStepA + 16; // add 120 deg of phase to whatever position StepA is. 
+  currentStepC = currentStepA + 32; // add 240 deg of phase to whatever position StepA is.
+  
+  currentStepA = currentStepA%48; // I used remainder operation or modulo to "wrap" the values between 0 and 47
+  currentStepB = currentStepB%48;
+  currentStepC = currentStepC%48;
+
+  analogWrite(pinGateAL, pwmSin[currentStepA]*POWER_SCALAR);
+  analogWrite(pinGateBL, pwmSin[currentStepC]*POWER_SCALAR);
+  analogWrite(pinGateCL, pwmSin[currentStepB]*POWER_SCALAR);
+
+}
+
+void PhaseAHighSideSine(uint8_t value)
+{
+  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
+    analogWrite(pinGateCH,pwmSin[i]*POWER_SCALAR);
+    delay(value);
+  }
+  digitalWriteFast(pinGateCH, HIGH);
+}
 
 void phaseABrampUpDownSine(uint8_t value)
 {
@@ -227,6 +275,7 @@ void pwmAllDisable()
 
 void move()
 {
+  // By Juan Pablo Angulo https://www.patreon.com/randomaccessprojects
   currentStepA = currentStepA + 1;  //Add 1 to make the motor move step by step.
   currentStepB = currentStepA + 16; //add 120 deg of phase to whatever position StepA is. 
   currentStepC = currentStepA + 32; //add 240 deg of phase to whatever position StepA is.
