@@ -25,3 +25,8 @@ https://www.youtube.com/channel/UCRd9x4pmbc09_RXTrkSY2Gg
 Electronoobs - brushless motor and ESC projects
 
 https://www.youtube.com/@ELECTRONOOBS
+
+
+SimpleFOC Project
+
+https://simplefoc.com/

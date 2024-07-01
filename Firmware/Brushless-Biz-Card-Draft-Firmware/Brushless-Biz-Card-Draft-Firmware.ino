@@ -18,6 +18,8 @@
     Hacked a bunch by Andy Geppert for Brushless Motor and Driver Business Card
 */
 
+#define DEBUG 0
+
 // USER RGB LED
   #define PIN_LED_GRB   13
   #include <Adafruit_NeoPixel.h>
@@ -41,7 +43,7 @@
   Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Analog input option, not used
-const int potPin = A1;  // INPUT pot control for speed or position
+  const int potPin = A1;  // INPUT pot control for speed or position
 
 // Digital Write FAST!!!
   #include <digitalWriteFast.h>
@@ -55,15 +57,21 @@ const int potPin = A1;  // INPUT pot control for speed or position
   uint8_t pinGateCL = 11;
 
 // MOTOR CONTROL Variables
-  #define POWER_SCALAR 0.5          // Between 0 and 1 to reduce the peak PWM value, aka voltage.
-  uint8_t stepDelay = 5; // Number of milliseconds between steps through the electrical cycle sine array
+  #define POWER_SCALAR 1          // Between 0 and 1 to reduce the peak PWM value, aka voltage.
+  uint8_t stepDelay = 10; // Number of milliseconds between steps through the electrical cycle sine array
   #define PWM_SINE_ARRAY_LENGTH 49    // from 0 to 48
-  int pwmSin[PWM_SINE_ARRAY_LENGTH] = {127,110,94,78,64,50,37,26,        17,10,4,1,0,1,4,10,              17,26,37,50,64,78,94,110,  127,144,160,176,191,204,217,228,   
+  int pwmSin[PWM_SINE_ARRAY_LENGTH] = {127,110,94,78,64,50,37,26,17,10,4,1,0,  1,4,10,17,26,37,50,64,78,94,110,127,144,160,176,191,204,217,228,   
                   237,244,250,253,255,253,250,244,  237,228,217,204,191,176,160,144  ,127}; // array of PWM duty values for 8-bit timer - sine function
-  int currentStepA=0; //initial pointer at 0   degrees for coil A
-  int currentStepB=16;//initial pointer at 120 degrees for coil B
-  int currentStepC=32;//initial pointer at 240 degrees for coil C
   int pos;
+
+  #define PWM_SINE_POS_NEG_LENGTH 73    // from 0 to 72
+  int16_t pwmSinePosNeg[PWM_SINE_POS_NEG_LENGTH] = {0,22,44,65,87,107,127,146,163,180,195,208,220,231,239,246,251,254,255,254,251,246,239,231,220,208,195,180,163,146,127,107,87,65,44,22,0,-23,-45,-66,-88,-108,-128,-147,-164,-181,-196,-209,-221,-232,-240,-247,-252,-255,-255,-255,-252,-247,-240,-232,-221,-209,-196,-181,-164,-147,-128,-108,-88,-66,-45,-23,-1};
+  int currentStepA=18; // initial pointer at  90 degrees for coil A
+  int currentStepB=66; // initial pointer at 330 degrees for coil B
+  int currentStepC=42; // initial pointer at 210 degrees for coil C
+  // int currentStepB=42; // initial pointer at 210 degrees for coil B
+  // int currentStepC=66; // initial pointer at 330 degrees for coil C
+  
 
 void setup() {
   // Serial Port
@@ -86,22 +94,23 @@ void setup() {
 
     // Capacitive touch buttons
 
-    // PWM Frequency
-      TCCR0B = TCCR0B & 0b11111000 | 0x03; // changing this will also affect millis() and delay(), better to leave it default (0x03).
-      TCCR1B = TCCR1B & 0b11111000 | 0x03; // set PWM frequency @ 31250 Hz for Pins 9 and 10, (0x03 is default value, gives 490 Hz).
-      TCCR2B = TCCR2B & 0b11111000 | 0x03; // set PWM frequency @ 31250 Hz for Pins 11 and 3, (0x03 is default value, gives 490 Hz).
+    // PWM Frequency, assuming ATmega 328PB at 16 MHz.
+      TCCR0B = TCCR0B & 0b11111000 | 0x03; // Pins 5 (AH) & 6 (FEEDBACK_COM).                              0x03=977 Hz default. Changing this will also affect millis() and delay(), better to leave it default.
+      TCCR1B = TCCR1B & 0b11111000 | 0x03; // Pins 9 (AL) & 10 (BL).          0x01=31763 Hz, 0x02=3921 Hz, 0x03=490 Hz default.
+      TCCR2B = TCCR2B & 0b11111000 | 0x03; // Pins 3 (BH) & 11 (CL).          0x01=31763 Hz, 0x02=3921 Hz, 0x03= 1 kHz default.
+      TCCR4B = TCCR4B & 0b11111000 | 0x03; // Pin  2 (CH)                     0x01=31763 Hz, 0x02=3921 Hz, 0x03=490 Hz default.
       ICR1 = 255 ; // 8 bit resolution for PWM
 
     // OUTPUT PINS
       pinMode(pinGateAL, OUTPUT);
       pinMode(pinGateBL, OUTPUT);
       pinMode(pinGateCL, OUTPUT);
-      // pinMode(pinGateAH, OUTPUT);
-      // pinMode(pinGateBH, OUTPUT);
-      // pinMode(pinGateCH, OUTPUT);
-      pinModeFast(pinGateAH, OUTPUT);
-      pinModeFast(pinGateBH, OUTPUT);
-      pinModeFast(pinGateCH, OUTPUT);
+      pinMode(pinGateAH, OUTPUT);
+      pinMode(pinGateBH, OUTPUT);
+      pinMode(pinGateCH, OUTPUT);
+      // pinModeFast(pinGateAH, OUTPUT);
+      // pinModeFast(pinGateBH, OUTPUT);
+      // pinModeFast(pinGateCH, OUTPUT);
       pwmAllDisable();
 
   // OLED SETUP
@@ -148,10 +157,17 @@ void loop() {
     // move();
     // phaseABrampUpDownTriangle();
     // phaseABrampUpDownSine(stepDelay);
-    PhaseAHighSideSine(stepDelay);
-    // spinTheMotorBlindlySineWave(stepDelay);
+    // PhaseCLowSideSine(stepDelay);
+    spinTheMotorBlindlySineWave(stepDelay);
 
-    delay (10);
+    // delay (10);
+    #if DEBUG == 1
+      Serial.print(currentStepA);
+      Serial.print(", ");
+      Serial.print(currentStepB);
+      Serial.print(", ");
+      Serial.println(currentStepC);
+    #endif    
     
 } // END OF MAIN LOOP FUNCTION
 
@@ -178,26 +194,139 @@ void spinTheMotorBlindlySineWave(uint8_t value)
   6                 pwm on
   */
   currentStepA = currentStepA + 1;  // Add 1 to make the motor move step by step.
-  currentStepB = currentStepA + 16; // add 120 deg of phase to whatever position StepA is. 
-  currentStepC = currentStepA + 32; // add 240 deg of phase to whatever position StepA is.
+  currentStepB = currentStepA + 24; // add 120 deg of phase to whatever position StepA is. 
+  currentStepC = currentStepB + 24; // add 120 deg of phase to whatever position StepB is.
   
-  currentStepA = currentStepA%48; // I used remainder operation or modulo to "wrap" the values between 0 and 47
-  currentStepB = currentStepB%48;
-  currentStepC = currentStepC%48;
+  currentStepA = currentStepA%73; // I used remainder operation or modulo to "wrap" the values between 0 and 72
+  currentStepB = currentStepB%73;
+  currentStepC = currentStepC%73;
 
-  analogWrite(pinGateAL, pwmSin[currentStepA]*POWER_SCALAR);
-  analogWrite(pinGateBL, pwmSin[currentStepC]*POWER_SCALAR);
-  analogWrite(pinGateCL, pwmSin[currentStepB]*POWER_SCALAR);
+  SetPwmPhaseA(pwmSinePosNeg[currentStepA]);
+  SetPwmPhaseB(pwmSinePosNeg[currentStepB]);
+  SetPwmPhaseC(pwmSinePosNeg[currentStepC]);
+  #if DEBUG == 2
+    Serial.print(pwmSinePosNeg[currentStepA]);
+//    Serial.print(", ");
+//    Serial.print(pwmSinePosNeg[currentStepB]);
+//    Serial.print(", ");
+//    Serial.print(pwmSinePosNeg[currentStepC]);
+    Serial.println();
+  #endif
+  delay(value);
+}
 
+void SetPwmPhaseA (int16_t value)
+{
+  // disable low side, pwm high side, with inverted logic (PWM value 5 converts to 250)
+  if ((value > 0) && (value <  256)) {
+    digitalWrite(pinGateAL,LOW ); 
+    analogWrite(pinGateAH,(255-value) * POWER_SCALAR);
+    // Serial.println("     LOW");
+    }
+  // disable high side, pwm low side, with direct logic (PWM value 5 stays 5)
+  if ((value < 0) && (value > -256)) {
+    digitalWrite(pinGateAH,HIGH); 
+    analogWrite(pinGateAL,abs(value) * POWER_SCALAR);
+    // Serial.println("              HIGH)");
+    } 
+  // disable low and high side
+  if (value == 0) { 
+    digitalWrite(pinGateAL,LOW ); 
+    digitalWrite(pinGateAH,HIGH);
+    // Serial.println("                      FLOAT)");
+    }
+}
+
+void SetPwmPhaseB (int16_t value)
+{
+  // disable low side, pwm high side, with inverted logic (PWM value 5 converts to 250)
+  if ((value > 0) && (value <  256)) {
+    digitalWrite(pinGateBL,LOW ); 
+    analogWrite(pinGateBH,(255-value) * POWER_SCALAR);
+    }
+  // disable high side, pwm low side, with direct logic (PWM value 5 stays 5)
+  if ((value < 0) && (value > -256)) {
+    digitalWrite(pinGateBH,HIGH); 
+    analogWrite(pinGateBL,abs(value) * POWER_SCALAR);
+    } 
+  // disable low and high side
+  if (value == 0) { 
+    digitalWrite(pinGateBL,LOW ); 
+    digitalWrite(pinGateBH,HIGH);
+    }
+}
+
+void SetPwmPhaseC (int16_t value)
+{
+  // disable low side, pwm high side, with inverted logic (PWM value 5 converts to 250)
+  if ((value > 0) && (value <  256)) {
+    digitalWrite(pinGateCL,LOW ); 
+    analogWrite(pinGateCH,(255-value) * POWER_SCALAR);
+    }
+  // disable high side, pwm low side, with direct logic (PWM value 5 stays 5)
+  if ((value < 0) && (value > -256)) {
+    digitalWrite(pinGateCH,HIGH); 
+    analogWrite(pinGateCL,abs(value) * POWER_SCALAR);
+    } 
+  // disable low and high side
+  if (value == 0) { 
+    digitalWrite(pinGateCL,LOW ); 
+    digitalWrite(pinGateCH,HIGH);
+    }
 }
 
 void PhaseAHighSideSine(uint8_t value)
+{
+  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
+    analogWrite(pinGateAH,pwmSin[i]*POWER_SCALAR);
+    delay(value);
+  }
+  digitalWriteFast(pinGateAH, HIGH);
+}
+
+void PhaseBHighSideSine(uint8_t value)
+{
+  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
+    analogWrite(pinGateBH,pwmSin[i]*POWER_SCALAR);
+    delay(value);
+  }
+  digitalWriteFast(pinGateBH, HIGH);
+}
+
+void PhaseCHighSideSine(uint8_t value)
 {
   for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
     analogWrite(pinGateCH,pwmSin[i]*POWER_SCALAR);
     delay(value);
   }
   digitalWriteFast(pinGateCH, HIGH);
+}
+
+
+void PhaseALowSideSine(uint8_t value)
+{
+  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
+    analogWrite(pinGateAL,pwmSin[i]*POWER_SCALAR);
+    delay(value);
+  }
+  digitalWriteFast(pinGateAL, LOW);
+}
+void PhaseBLowSideSine(uint8_t value)
+{
+  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
+    analogWrite(pinGateBL,pwmSin[i]*POWER_SCALAR);
+    delay(value);
+  }
+  digitalWriteFast(pinGateBL, LOW);
+}
+
+void PhaseCLowSideSine(uint8_t value)
+{
+  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
+    analogWrite(pinGateCL,pwmSin[i]*POWER_SCALAR);
+    delay(value);
+  }
+  digitalWriteFast(pinGateCL, LOW);
 }
 
 void phaseABrampUpDownSine(uint8_t value)
