@@ -13458,7 +13458,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "20MHz 15pF Resonator"
+		(property "Value" "16MHz 15pF Resonator"
 			(at 85.0901 171.45 0)
 			(effects
 				(font
@@ -13512,7 +13512,16 @@
 				(hide yes)
 			)
 		)
-		(property "Digi-Key_PN" "490-17955-1-ND"
+		(property "Digi-Key_PN" "490-17950-1-ND"
+			(at 80.01 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "CSTNE16M0V53Z000R0"
 			(at 80.01 166.37 0)
 			(effects
 				(font
@@ -13622,6 +13631,15 @@
 			)
 		)
 		(property "Digi-Key_PN" "2019-RK73H2ATTD4700FCT-ND"
+			(at 254 215.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD4700F"
 			(at 254 215.9 0)
 			(effects
 				(font
@@ -13993,6 +14011,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1201FCT-ND"
+			(at 173.355 189.865 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1201F"
+			(at 173.355 189.865 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "6b360293-94af-4256-8c25-66daf1e35810")
 		)
@@ -14220,6 +14256,24 @@
 			)
 		)
 		(property "Insert" "YES"
+			(at 273.05 168.275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1001FCT-ND"
+			(at 273.05 168.275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1001F"
 			(at 273.05 168.275 0)
 			(effects
 				(font
@@ -14620,6 +14674,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "RK73H2ATTD4700F"
+			(at 254 169.545 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3dfdea29-29e2-4b8c-a947-849dced4b10a")
 		)
@@ -14991,6 +15054,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1001FCT-ND"
+			(at 304.8 216.535 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1001F"
+			(at 304.8 216.535 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5efcf711-d3e4-48f1-bf0a-7f8ae9db7230")
 		)
@@ -15144,6 +15225,24 @@
 			)
 		)
 		(property "Insert" "YES"
+			(at 181.61 198.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD68R0FCT-ND"
+			(at 181.61 198.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD68R0F"
 			(at 181.61 198.12 0)
 			(effects
 				(font
@@ -15315,6 +15414,15 @@
 			)
 		)
 		(property "Digi-Key_PN" "2019-RK73H2ATTD4700FCT-ND"
+			(at 254 198.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD4700F"
 			(at 254 198.12 0)
 			(effects
 				(font
@@ -15666,6 +15774,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "490-13970-1-ND"
+			(at 135.255 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "GRM31CR60J227ME11L"
+			(at 135.255 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7ad1376b-4912-4aa5-a71c-d9ccc4fb5bc1")
 		)
@@ -15820,6 +15946,24 @@
 			)
 		)
 		(property "Insert" "YES"
+			(at 181.61 195.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD68R0FCT-ND"
+			(at 181.61 195.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD68R0F"
 			(at 181.61 195.58 0)
 			(effects
 				(font
@@ -15992,6 +16136,15 @@
 			)
 		)
 		(property "Digi-Key_PN" "2019-RK73H2ATTD4700FCT-ND"
+			(at 254 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD4700F"
 			(at 254 177.8 0)
 			(effects
 				(font
@@ -16176,6 +16329,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1001FCT-ND"
+			(at 378.46 210.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1001F"
+			(at 378.46 210.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8c693488-b6cc-4855-a3df-67a624b3c6a8")
 		)
@@ -16279,7 +16450,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "SL3401A-TP"
+		(property "MPN" "DMP2066LSN-7"
 			(at 61.595 41.91 0)
 			(effects
 				(font
@@ -16583,6 +16754,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1002FCT-ND"
+			(at 61.595 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1002F"
+			(at 61.595 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "0cf9a0bc-73f9-4c22-a1a9-3d9b60e0abb9")
 		)
@@ -16746,6 +16935,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1001FCT-ND"
+			(at 378.46 215.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1001F"
+			(at 378.46 215.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "82016ff9-feda-43db-b4a4-f16ba8a7a0df")
 		)
@@ -16815,7 +17022,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "NVTR4503NT1G"
+		(property "MPN" "DMN2020LSN-7"
 			(at 279.4 201.93 0)
 			(effects
 				(font
@@ -17100,6 +17307,24 @@
 			)
 		)
 		(property "Value_Modifier" "X7R ceramic"
+			(at 25.4 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "1276-2922-1-ND"
+			(at 25.4 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "CL21B104KAFNNNE"
 			(at 25.4 104.14 0)
 			(effects
 				(font
@@ -17809,6 +18034,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "RK73H2ATTD4700F"
+			(at 254 186.055 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "74d32620-f221-4b91-a620-33ab654dcf28")
 		)
@@ -17963,6 +18197,24 @@
 			)
 		)
 		(property "Value_Modifier" "X7R ceramic"
+			(at 393.065 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "1276-2922-1-ND"
+			(at 393.065 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "CL21B104KAFNNNE"
 			(at 393.065 220.98 0)
 			(effects
 				(font
@@ -18193,7 +18445,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "NVTR4503NT1G"
+		(property "MPN" "DMN2020LSN-7"
 			(at 311.15 201.93 0)
 			(effects
 				(font
@@ -18557,6 +18809,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "1276-2922-1-ND"
+			(at 43.815 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "CL21B104KAFNNNE"
+			(at 43.815 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "4727fa4a-d0a3-44fd-bc5b-1914dc934342")
 		)
@@ -18856,6 +19126,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1001FCT-ND"
+			(at 304.8 168.275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1001F"
+			(at 304.8 168.275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f5525156-1ca2-42e9-ac55-731314359a3b")
 		)
@@ -18935,6 +19223,24 @@
 			)
 		)
 		(property "Insert" "YES"
+			(at 15.875 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "490-13970-1-ND"
+			(at 15.875 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "GRM31CR60J227ME11L"
 			(at 15.875 129.54 0)
 			(effects
 				(font
@@ -19167,6 +19473,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "1276-6472-1-ND"
+			(at 19.05 121.285 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "CL21B106KOQNNNG"
+			(at 19.05 121.285 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2a749bb1-9058-42df-a28d-ced02317677e")
 		)
@@ -19313,6 +19637,24 @@
 			)
 		)
 		(property "Insert" "YES"
+			(at 140.335 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "490-13970-1-ND"
+			(at 140.335 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "GRM31CR60J227ME11L"
 			(at 140.335 44.45 0)
 			(effects
 				(font
@@ -19615,6 +19957,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1001FCT-ND"
+			(at 378.46 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1001F"
+			(at 378.46 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2104e58d-c8d9-4e9d-afd5-17bd0d173ffd")
 		)
@@ -19846,6 +20206,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1201FCT-ND"
+			(at 175.895 189.865 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1201F"
+			(at 175.895 189.865 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "78918ae9-d241-45c7-ba3a-70c7495c30d9")
 		)
@@ -19917,6 +20295,15 @@
 			)
 		)
 		(property "Digi-Key_PN" "DMP2066LSNDICT-ND"
+			(at 279.4 183.515 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "DMP2066LSN-7"
 			(at 279.4 183.515 0)
 			(effects
 				(font
@@ -20137,6 +20524,15 @@
 			)
 		)
 		(property "Digi-Key_PN" "ATMEGA328PB-AU-ND"
+			(at 56.515 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "ATMEGA328PB-AU"
 			(at 56.515 118.11 0)
 			(effects
 				(font
@@ -20534,6 +20930,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1001FCT-ND"
+			(at 336.55 216.535 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1001F"
+			(at 336.55 216.535 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "904c5809-91c3-4819-be73-bd9bdff40768")
 		)
@@ -20605,6 +21019,15 @@
 			)
 		)
 		(property "Digi-Key_PN" "DMP2066LSNDICT-ND"
+			(at 311.15 183.515 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "DMP2066LSN-7"
 			(at 311.15 183.515 0)
 			(effects
 				(font
@@ -20685,7 +21108,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" " SFH11-NBPC-D03-ST-BK"
+		(property "MPN" "SFH11-NBPC-D03-ST-BK"
 			(at 173.99 225.425 0)
 			(effects
 				(font
@@ -20821,6 +21244,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "DMP2066LSN-7"
+			(at 342.9 183.515 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2e7929ff-2cb5-4257-8ac5-3e0b4584c948")
 		)
@@ -20913,6 +21345,24 @@
 			)
 		)
 		(property "Insert" "YES"
+			(at 273.05 216.535 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1001FCT-ND"
+			(at 273.05 216.535 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1001F"
 			(at 273.05 216.535 0)
 			(effects
 				(font
@@ -21027,6 +21477,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "RK73H2ATTD4700F"
+			(at 254 207.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "192a285f-d7b0-44f1-a2b8-b0bf5473877e")
 		)
@@ -21096,7 +21555,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "NVTR4503NT1G"
+		(property "MPN" "DMN2020LSN-7"
 			(at 342.9 201.93 0)
 			(effects
 				(font
@@ -21389,6 +21848,24 @@
 				(hide yes)
 			)
 		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1002FCT-ND"
+			(at 87.63 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1002F"
+			(at 87.63 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b25b4923-091b-4f82-b6d9-83f1879eed78")
 		)
@@ -21477,6 +21954,24 @@
 			)
 		)
 		(property "Value_Modifier" "X7R ceramic"
+			(at 22.225 112.395 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "1276-2922-1-ND"
+			(at 22.225 112.395 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "CL21B104KAFNNNE"
 			(at 22.225 112.395 0)
 			(effects
 				(font
@@ -21574,6 +22069,24 @@
 			)
 		)
 		(property "Insert" "YES"
+			(at 336.55 168.275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digi-Key_PN" "2019-RK73H2ATTD1001FCT-ND"
+			(at 336.55 168.275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RK73H2ATTD1001F"
 			(at 336.55 168.275 0)
 			(effects
 				(font
