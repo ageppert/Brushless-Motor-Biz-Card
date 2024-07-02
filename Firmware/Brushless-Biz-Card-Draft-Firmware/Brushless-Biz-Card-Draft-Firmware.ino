@@ -25,9 +25,9 @@
   #include <Adafruit_NeoPixel.h>
   #define NUM_LEDS       1
   Adafruit_NeoPixel pixels(NUM_LEDS, PIN_LED_GRB, NEO_GRB + NEO_KHZ800);
-  int ledBlinkState = 0;
-  unsigned long previousMillis = 0;
-  unsigned long currentMillis = 0;
+  uint8_t  ledBlinkState = 0;
+  uint32_t previousMillis = 0;
+  uint32_t currentMillis = 0;
   const long interval = 500;
 
 // SAO OLED I2C 0x3C
@@ -42,36 +42,26 @@
   #define SCREEN_ADDRESS 0x3C
   Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// Analog input option, not used
-  const int potPin = A1;  // INPUT pot control for speed or position
-
-// Digital Write FAST!!!
-  #include <digitalWriteFast.h>
-  uint8_t pinGateAH =  5; // Set high to disable upper PFET, low to enable. Using only LOW/HIGH digital control. No need to PWM these.
+// PWM
+  uint8_t pinGateAH =  5;         // Set high to disable upper PFET, low to enable.
   uint8_t pinGateBH =  3;
   uint8_t pinGateCH =  2;
-
-// PWM
-  uint8_t pinGateAL =  9; // Set low to disable lower NFET, high to enable. These are modulated with PWM.
+  uint8_t pinGateAL =  9;         // Set low to disable lower NFET, high to enable.
   uint8_t pinGateBL = 10;
   uint8_t pinGateCL = 11;
 
 // MOTOR CONTROL Variables
   #define POWER_SCALAR 1          // Between 0 and 1 to reduce the peak PWM value, aka voltage.
-  uint8_t stepDelay = 10; // Number of milliseconds between steps through the electrical cycle sine array
-  #define PWM_SINE_ARRAY_LENGTH 49    // from 0 to 48
-  int pwmSin[PWM_SINE_ARRAY_LENGTH] = {127,110,94,78,64,50,37,26,17,10,4,1,0,  1,4,10,17,26,37,50,64,78,94,110,127,144,160,176,191,204,217,228,   
-                  237,244,250,253,255,253,250,244,  237,228,217,204,191,176,160,144  ,127}; // array of PWM duty values for 8-bit timer - sine function
-  int pos;
+  uint32_t stepDelay = 1000;          // Number of milliseconds between steps through the electrical cycle sine array
 
-  #define PWM_SINE_POS_NEG_LENGTH 73    // from 0 to 72
-  int16_t pwmSinePosNeg[PWM_SINE_POS_NEG_LENGTH] = {0,22,44,65,87,107,127,146,163,180,195,208,220,231,239,246,251,254,255,254,251,246,239,231,220,208,195,180,163,146,127,107,87,65,44,22,0,-23,-45,-66,-88,-108,-128,-147,-164,-181,-196,-209,-221,-232,-240,-247,-252,-255,-255,-255,-252,-247,-240,-232,-221,-209,-196,-181,-164,-147,-128,-108,-88,-66,-45,-23,-1};
-  int currentStepA=18; // initial pointer at  90 degrees for coil A
-  int currentStepB=66; // initial pointer at 330 degrees for coil B
-  int currentStepC=42; // initial pointer at 210 degrees for coil C
-  // int currentStepB=42; // initial pointer at 210 degrees for coil B
-  // int currentStepC=66; // initial pointer at 330 degrees for coil C
-  
+  // STARTED WITH 73 ELEMENTS, BACK TO BACK SINE WAVES.
+  int16_t pwmSinePosNeg[] = {0,22,44,65,87,107,127,146,163,180,195,208,220,231,239,246,251,254,255,254,251,246,239,231,220,208,195,180,163,146,127,107,87,65,44,22,0,-23,-45,-66,-88,-108,-128,-147,-164,-181,-196,-209,-221,-232,-240,-247,-252,-255,-255,-255,-252,-247,-240,-232,-221,-209,-196,-181,-164,-147,-128,-108,-88,-66,-45,-23,-1};
+  // TESTING WITH 36 MORE ELEMENTS, PRE-PENDED ZEROS.
+  // int16_t pwmSinePosNeg[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  0,22,44,65,87,107,127,146,163,180,195,208,220,231,239,246,251,254,255,254,251,246,239,231,220,208,195,180,163,146,127,107,87,65,44,22,0,-23,-45,-66,-88,-108,-128,-147,-164,-181,-196,-209,-221,-232,-240,-247,-252,-255,-255,-255,-252,-247,-240,-232,-221,-209,-196,-181,-164,-147,-128,-108,-88,-66,-45,-23,-1};
+  uint8_t SineArrayElementCount = sizeof(pwmSinePosNeg) / sizeof(pwmSinePosNeg[0]);
+  uint8_t currentStepA  =                (SineArrayElementCount *  90 / 360);  // initial array position at 90 degrees for coil A
+  uint8_t currentStepB  = currentStepA + (SineArrayElementCount * 120 / 360);  // initial array position at 90 + 120 = 210 degrees for coil B
+  uint8_t currentStepC  = currentStepB + (SineArrayElementCount * 120 / 360);  // initial array position at 90 + 240 = 330 degrees for coil C
 
 void setup() {
   // Serial Port
@@ -90,15 +80,14 @@ void setup() {
   // Configure hardware per EEPROM
     // Default state of pins should be floating, and external (on-board) hardware should provide safe starting states
     // Inputs
-      pinMode(potPin, INPUT);
 
     // Capacitive touch buttons
 
     // PWM Frequency, assuming ATmega 328PB at 16 MHz.
-      TCCR0B = TCCR0B & 0b11111000 | 0x03; // Pins 5 (AH) & 6 (FEEDBACK_COM).                              0x03=977 Hz default. Changing this will also affect millis() and delay(), better to leave it default.
-      TCCR1B = TCCR1B & 0b11111000 | 0x03; // Pins 9 (AL) & 10 (BL).          0x01=31763 Hz, 0x02=3921 Hz, 0x03=490 Hz default.
-      TCCR2B = TCCR2B & 0b11111000 | 0x03; // Pins 3 (BH) & 11 (CL).          0x01=31763 Hz, 0x02=3921 Hz, 0x03= 1 kHz default.
-      TCCR4B = TCCR4B & 0b11111000 | 0x03; // Pin  2 (CH)                     0x01=31763 Hz, 0x02=3921 Hz, 0x03=490 Hz default.
+      TCCR0B = TCCR0B & 0b11111000 | 0x01; // Pins 5 (AH) & 6 (FEEDBACK_COM).                              0x03=977 Hz default. Changing this will also affect millis() and delay(), better to leave it default.
+      TCCR1B = TCCR1B & 0b11111000 | 0x01; // Pins 9 (AL) & 10 (BL).          0x01=31763 Hz, 0x02=3921 Hz, 0x03=490 Hz default.
+      TCCR2B = TCCR2B & 0b11111000 | 0x01; // Pins 3 (BH) & 11 (CL).          0x01=31763 Hz, 0x02=3921 Hz, 0x03= 1 kHz default.
+      TCCR4B = TCCR4B & 0b11111000 | 0x01; // Pin  2 (CH)                     0x01=31763 Hz, 0x02=3921 Hz, 0x03=490 Hz default.
       ICR1 = 255 ; // 8 bit resolution for PWM
 
     // OUTPUT PINS
@@ -135,6 +124,25 @@ void setup() {
     }
     ledBlue();
     delay(500);
+
+  // DISPLAY CONFIGURATION PARAMETERS
+    Serial.print("Sine Wave Array Element Count: ");
+    Serial.println(SineArrayElementCount);
+    Serial.print("Sine Wave Array Element Starting Positions (A,B,C): ");
+    Serial.print(currentStepA);
+    Serial.print(", ");
+    Serial.print(currentStepB);
+    Serial.print(", ");
+    Serial.print(currentStepC);
+    Serial.println();
+    Serial.print("Sine Wave Array Element Starting PWM Values (A,B,C): ");
+    Serial.print(pwmSinePosNeg[currentStepA]);
+    Serial.print(", ");
+    Serial.print(pwmSinePosNeg[currentStepB]);
+    Serial.print(", ");
+    Serial.print(pwmSinePosNeg[currentStepC]);
+    Serial.println();
+    
 } // END OF SETUP FUNCTION
  
 void loop() {
@@ -193,25 +201,27 @@ void spinTheMotorBlindlySineWave(uint8_t value)
   5         pwm         on
   6                 pwm on
   */
-  currentStepA = currentStepA + 1;  // Add 1 to make the motor move step by step.
-  currentStepB = currentStepA + 24; // add 120 deg of phase to whatever position StepA is. 
-  currentStepC = currentStepB + 24; // add 120 deg of phase to whatever position StepB is.
+  currentStepA = currentStepA + 1;  // Once the phasing is set, just increment all of the phases through the array.
+  currentStepB = currentStepB + 1;
+  currentStepC = currentStepC + 1;
   
-  currentStepA = currentStepA%73; // I used remainder operation or modulo to "wrap" the values between 0 and 72
-  currentStepB = currentStepB%73;
-  currentStepC = currentStepC%73;
+  currentStepA = currentStepA % SineArrayElementCount; // Remainder operation or modulo to "wrap" the values between 0 and # of elements in the array.
+  currentStepB = currentStepB % SineArrayElementCount;
+  currentStepC = currentStepC % SineArrayElementCount;
 
   SetPwmPhaseA(pwmSinePosNeg[currentStepA]);
   SetPwmPhaseB(pwmSinePosNeg[currentStepB]);
   SetPwmPhaseC(pwmSinePosNeg[currentStepC]);
   #if DEBUG == 2
     Serial.print(pwmSinePosNeg[currentStepA]);
-//    Serial.print(", ");
-//    Serial.print(pwmSinePosNeg[currentStepB]);
-//    Serial.print(", ");
-//    Serial.print(pwmSinePosNeg[currentStepC]);
+    Serial.print(", ");
+    Serial.print(pwmSinePosNeg[currentStepB]);
+    Serial.print(", ");
+    Serial.print(pwmSinePosNeg[currentStepC]);
     Serial.println();
   #endif
+  delay(value);
+  delay(value);
   delay(value);
 }
 
@@ -277,62 +287,62 @@ void SetPwmPhaseC (int16_t value)
 
 void PhaseAHighSideSine(uint8_t value)
 {
-  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
-    analogWrite(pinGateAH,pwmSin[i]*POWER_SCALAR);
+  for( uint8_t i = 0; i < SineArrayElementCount; i++) {
+    analogWrite(pinGateAH,pwmSinePosNeg[i]*POWER_SCALAR);
     delay(value);
   }
-  digitalWriteFast(pinGateAH, HIGH);
+  digitalWrite(pinGateAH, HIGH);
 }
 
 void PhaseBHighSideSine(uint8_t value)
 {
-  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
-    analogWrite(pinGateBH,pwmSin[i]*POWER_SCALAR);
+  for( uint8_t i = 0; i < SineArrayElementCount; i++) {
+    analogWrite(pinGateBH,pwmSinePosNeg[i]*POWER_SCALAR);
     delay(value);
   }
-  digitalWriteFast(pinGateBH, HIGH);
+  digitalWrite(pinGateBH, HIGH);
 }
 
 void PhaseCHighSideSine(uint8_t value)
 {
-  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
-    analogWrite(pinGateCH,pwmSin[i]*POWER_SCALAR);
+  for( uint8_t i = 0; i < SineArrayElementCount; i++) {
+    analogWrite(pinGateCH,pwmSinePosNeg[i]*POWER_SCALAR);
     delay(value);
   }
-  digitalWriteFast(pinGateCH, HIGH);
+  digitalWrite(pinGateCH, HIGH);
 }
 
 
 void PhaseALowSideSine(uint8_t value)
 {
-  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
-    analogWrite(pinGateAL,pwmSin[i]*POWER_SCALAR);
+  for( uint8_t i = 0; i < SineArrayElementCount; i++) {
+    analogWrite(pinGateAL,pwmSinePosNeg[i]*POWER_SCALAR);
     delay(value);
   }
-  digitalWriteFast(pinGateAL, LOW);
+  digitalWrite(pinGateAL, LOW);
 }
 void PhaseBLowSideSine(uint8_t value)
 {
-  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
-    analogWrite(pinGateBL,pwmSin[i]*POWER_SCALAR);
+  for( uint8_t i = 0; i < SineArrayElementCount; i++) {
+    analogWrite(pinGateBL,pwmSinePosNeg[i]*POWER_SCALAR);
     delay(value);
   }
-  digitalWriteFast(pinGateBL, LOW);
+  digitalWrite(pinGateBL, LOW);
 }
 
 void PhaseCLowSideSine(uint8_t value)
 {
-  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
-    analogWrite(pinGateCL,pwmSin[i]*POWER_SCALAR);
+  for( uint8_t i = 0; i < SineArrayElementCount; i++) {
+    analogWrite(pinGateCL,pwmSinePosNeg[i]*POWER_SCALAR);
     delay(value);
   }
-  digitalWriteFast(pinGateCL, LOW);
+  digitalWrite(pinGateCL, LOW);
 }
 
 void phaseABrampUpDownSine(uint8_t value)
 {
-  for( uint8_t i = 0; i < PWM_SINE_ARRAY_LENGTH; i++) {
-    pwmAtoBEnable(pwmSin[i]);
+  for( uint8_t i = 0; i < SineArrayElementCount; i++) {
+    pwmAtoBEnable(pwmSinePosNeg[i]);
     delay(value);
   }
   pwmAtoBEnable(0);
@@ -365,12 +375,12 @@ void pwmAtoBEnable(uint8_t value)
 {
   if (value>0) {
     // analogWrite(pinGateAH,0);       // A high side enable solid
-    digitalWriteFast(pinGateAH, LOW);
+    digitalWrite(pinGateAH, LOW);
     analogWrite(pinGateBL,value);   // B low side enable PWM
   }
   else {
     // analogWrite(pinGateAH,255);     // A high side disable solid
-    digitalWriteFast(pinGateAH, HIGH);
+    digitalWrite(pinGateAH, HIGH);
     analogWrite(pinGateBL,0);       // B low side disable PWM
   }
 }
@@ -379,12 +389,12 @@ void pwmBtoAEnable(uint8_t value)
 {
   if (value>0) {
     // analogWrite(pinGateBH,0);       // A high side enable solid
-    digitalWriteFast(pinGateBH, LOW);
+    digitalWrite(pinGateBH, LOW);
     analogWrite(pinGateAL,value);   // B low side enable PWM
   }
   else {
     // nalogWrite(pinGateBH,255);     // A high side disable solid
-    digitalWriteFast(pinGateBH, HIGH);
+    digitalWrite(pinGateBH, HIGH);
     analogWrite(pinGateAL,0);       // B low side disable PWM
   }
 }
@@ -394,55 +404,12 @@ void pwmAllDisable()
   // analogWrite(pinGateAH,255);
   // analogWrite(pinGateBH,255);
   // analogWrite(pinGateCH,255);
-  digitalWriteFast(pinGateAH, HIGH);
-  digitalWriteFast(pinGateBH, HIGH);
-  digitalWriteFast(pinGateCH, HIGH);
+  digitalWrite(pinGateAH, HIGH);
+  digitalWrite(pinGateBH, HIGH);
+  digitalWrite(pinGateCH, HIGH);
   analogWrite(pinGateAL,0);
   analogWrite(pinGateBL,0);
   analogWrite(pinGateCL,0);  
-}
-
-void move()
-{
-  // By Juan Pablo Angulo https://www.patreon.com/randomaccessprojects
-  currentStepA = currentStepA + 1;  //Add 1 to make the motor move step by step.
-  currentStepB = currentStepA + 16; //add 120 deg of phase to whatever position StepA is. 
-  currentStepC = currentStepA + 32; //add 240 deg of phase to whatever position StepA is.
-  
-  currentStepA = currentStepA%48; //I used remainder operation or modulo to "wrap" the values between 0 and 47
-  currentStepB = currentStepB%48;
-  currentStepC = currentStepC%48;
-
-  analogWrite(pinGateAL, pwmSin[currentStepA]*1); //multipliying by 0.5 to reduce output torque to half as its being supplied with 12V and can get pretty warm. make this 1 if supply is 5V or if you know what you are doing ;)
-  analogWrite(pinGateBL, pwmSin[currentStepC]*1);
-  analogWrite(pinGateCL, pwmSin[currentStepB]*1);
-
-  //Following send data to PLX-DAQ macro for Excel
-  Serial.print("DATA,");
-  Serial.print(pwmSin[currentStepA]);
-  Serial.print(","); 
-  Serial.print(pwmSin[currentStepB]);
-  Serial.print(","); 
-  Serial.println(pwmSin[currentStepC]);
-  
-
-  //Read pot value
-  int sensorValue = analogRead(potPin); 
-
-// Select ONLY ONE of the following lines for constant speed, speed control or position control:
-
-  //This will give you constant speed, remember if you changed TCCR0B to 0x01, then delay(64000) = ~1 second
-  delay(5); 
-
-  //This will give you open loop speed control with the potentiometer
-  //delay(sensorValue/10);
-
-  //This will give you open loop position control with the potentiometer
-  currentStepA = sensorValue/5; //divide by a number to affect the ratio of pot position : motor position
-
-  //Serial.println(currentStepA);
-  //pos=pulseIn(encoder,HIGH);
-  //Serial.println(pos);
 }
 
 void twinkle()
