@@ -8,3 +8,5 @@
 # local project settings
 *.kicad_prl
 fp-info-cache
+# Misc files
+*.DS_Store
